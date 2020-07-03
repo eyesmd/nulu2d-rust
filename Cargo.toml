@@ -1,7 +1,7 @@
 [package]
-name = "nulu2d-rust"
+name = "nulu2d"
 version = "0.1.0"
-authors = ["Nicolás Pazos <npazosmendez@gmail.com>"]
+authors = []
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
