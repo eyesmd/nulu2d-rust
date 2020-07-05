@@ -65,24 +65,35 @@ impl ops::Add<&Point> for &Point {
         return Point::new(self.x + other.x, self.y + other.y);
     }
 }
+
 impl ops::Sub<&Point> for &Point {
     type Output = Point;
     fn sub(self, other: &Point) -> Point {
         return Point::new(self.x - other.x, self.y - other.y);
     }
 }
+
 impl ops::Mul<f64> for &Point {
     type Output = Point;
     fn mul(self, scalar: f64) -> Point {
         return Point::new(self.x*scalar, self.y*scalar);
     }
 }
+
 impl ops::Mul<&Point> for &Point {
     type Output = f64;
     fn mul(self, other: &Point) -> f64 {
         return self.x * other.x + self.y * other.y;
     }
 }
+
+impl ops::BitXor<&Point> for &Point {
+    type Output = f64;
+    fn bitxor(self, other: &Point) -> f64 {
+        return self.x * other.y - self.y * other.x;
+    }
+}
+
 impl ops::Div<f64> for &Point {
     type Output = Point;
     fn div(self, scalar: f64) -> Point {
@@ -187,6 +198,13 @@ mod point_tests {
         let other = Point::new(1.0, -3.0);
         let dot_prod = &point * &other;
         assert_in_delta(dot_prod, -4.0);
+    }
+
+    #[test]
+    fn vector_product() {
+        let point = Point::new(2.0, 2.0);
+        let other = Point::new(1.0, -3.0);
+        assert_in_delta(&point ^ &other, -8.0);
     }
 
     #[test]
