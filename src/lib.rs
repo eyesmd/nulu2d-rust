@@ -3,8 +3,8 @@ use std::ops;
 
 #[derive(Copy, Clone)]
 pub struct Point {
-    x : f64,
-    y : f64,
+    pub x : f64,
+    pub y : f64,
 }
 
 impl Point {
@@ -14,6 +14,13 @@ impl Point {
             x: x,
             y: y,
         };
+    }
+
+    pub fn from_polar(angle : f64, norm : f64) -> Point {
+        return Point {
+            x: angle.cos() * norm,
+            y: angle.sin() * norm
+        }
     }
 
     pub fn angle(&self) -> f64 {
@@ -86,9 +93,8 @@ mod point_tests {
     fn assert_in_delta(a: f64, b : f64) {
         // TODO: hacerla macro, creo
         let delta = 1e-5;
-        if (a-b).abs() > delta {
-            panic!("{} != {} (DELTA={})",a,b,delta);
-        }
+        assert!((a-b).abs() < delta,
+                "{} != {} (DELTA={})", a, b, delta);
     }
 
     #[test]
@@ -97,6 +103,14 @@ mod point_tests {
         assert_in_delta(point.x, -10.0);
         assert_in_delta(point.y, 15.5);
     }
+
+    #[test]
+    fn from_polar() {
+        let p = Point::from_polar(-consts::PI * 0.25, 8.0f64.sqrt());
+        assert_in_delta(2.0, p.x);
+        assert_in_delta(-2.0, p.y);
+    }
+
     #[test]
     fn polar_read() {
         let point = Point::new(-1.0, -1.0);
@@ -110,6 +124,7 @@ mod point_tests {
         let expected = 2.0*consts::PI;
         assert_in_delta(point.angle(), expected);
     }
+
     #[test]
     fn polar_write() {
         let mut point = Point::new(1.0, 0.0);
@@ -117,6 +132,7 @@ mod point_tests {
         assert_in_delta(point.x, 2.0_f64.sqrt()/2.0);
         assert_in_delta(point.y, 2.0_f64.sqrt()/2.0);
     }
+
     #[test]
     fn add() {
         let point = Point::new(1.0, -1.0);
@@ -125,6 +141,7 @@ mod point_tests {
         assert_in_delta(sum.x, 13.0);
         assert_in_delta(sum.y, 0.5);
     }
+
     #[test]
     fn sub() {
         let point = Point::new(1.0, -1.0);
@@ -133,6 +150,7 @@ mod point_tests {
         assert_in_delta(sub.x, -11.0);
         assert_in_delta(sub.y, -2.5);
     }
+
     #[test]
     fn mul_scalar() {
         let point = Point::new(4.0, -1.0);
@@ -140,6 +158,7 @@ mod point_tests {
         assert_in_delta(point.x, 8.0);
         assert_in_delta(point.y, -2.0);
     }
+
     #[test]
     fn dot_product() {
         let point = Point::new(2.0, 2.0);
@@ -147,6 +166,7 @@ mod point_tests {
         let dot_prod = point * other;
         assert_in_delta(dot_prod, -4.0);
     }
+
     #[test]
     fn div() {
         let point = Point::new(4.0, -1.0);
@@ -154,6 +174,7 @@ mod point_tests {
         assert_in_delta(point.x, 2.0);
         assert_in_delta(point.y, -0.5);
     }
+
     #[test]
     fn unit() {
         let point = Point::new(3.3, -1.12);
@@ -161,6 +182,7 @@ mod point_tests {
         assert_in_delta(unit.norm(), 1.0);
         assert_in_delta(unit.angle(), point.angle());
     }
+
     #[test]
     fn rotated() {
         let point = Point::new(1.0, 0.0);
