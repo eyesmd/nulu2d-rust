@@ -43,6 +43,11 @@ impl Point {
     pub fn set_angle(&mut self, angle : f64) {
         self.direct_to(angle, self.norm());
     }
+
+    pub fn set_norm(&mut self, norm : f64) {
+        self.direct_to(self.angle(), norm);
+    }
+
     pub fn direct_to(&mut self, angle : f64, norm : f64) {
         self.x = angle.cos() * norm;
         self.y = angle.sin() * norm;
@@ -91,13 +96,13 @@ mod point_tests {
 
     fn assert_in_delta(a: f64, b : f64) {
         // TODO: hacerla macro, creo
-        let delta = 1e-5;
+        let delta = 1e-3;
         assert!((a-b).abs() < delta,
                 "{} != {} (DELTA={})", a, b, delta);
     }
 
     #[test]
-    fn new_works() {
+    fn new() {
         let point = Point::new(-10.0, 15.5);
         assert_in_delta(point.x, -10.0);
         assert_in_delta(point.y, 15.5);
@@ -126,10 +131,28 @@ mod point_tests {
 
     #[test]
     fn polar_write() {
-        let mut point = Point::new(1.0, 0.0);
+        let mut point = Point::new(2.0, 0.0);
+
+        point.set_norm(1.0);
         point.set_angle(consts::PI/4.0);
-        assert_in_delta(point.x, 2.0_f64.sqrt()/2.0);
-        assert_in_delta(point.y, 2.0_f64.sqrt()/2.0);
+        assert_in_delta(point.x, 0.707);
+        assert_in_delta(point.y, 0.707);
+
+        point.set_angle(0.0);
+        assert_in_delta(point.x, 1.0);
+        assert_in_delta(point.y, 0.0);
+
+        point.set_angle(2.0 * consts::PI - 0.1);
+        assert_in_delta(point.x, 0.995);
+        assert_in_delta(point.y, -0.099);
+
+        point.set_angle(2.0 * consts::PI);
+        assert_in_delta(point.x, 1.0);
+        assert_in_delta(point.y, 0.0);
+
+        point.set_angle(4.0 * consts::PI);
+        assert_in_delta(point.x, 1.0);
+        assert_in_delta(point.y, 0.0);
     }
 
     #[test]
