@@ -297,6 +297,4 @@ mod point_tests {
         assert!(p1.is_similar(p2));
     }
 
-
-
 }
