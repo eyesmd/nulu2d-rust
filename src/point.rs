@@ -3,7 +3,7 @@ use std::f64::consts;
 use std::ops;
 
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Point {
     pub x : f64,
     pub y : f64,
@@ -79,6 +79,15 @@ impl Point {
     pub fn point_to(&mut self, x : f64, y : f64) {
         self.x = x;
         self.y = y;
+    }
+
+    // Comparisons
+    pub fn distance(self, other : Point) -> f64 {
+        (self - other).norm()
+    }
+
+    pub fn is_similar(self, other : Point) -> bool {
+        self.distance(other).abs() < 1e-5
     }
 }
 
@@ -273,4 +282,21 @@ mod point_tests {
         assert_in_delta( actual.x, expected.x );
         assert_in_delta( actual.y, expected.y );
     }
+
+    #[test]
+    fn distance() {
+        let p1 = Point::new(2.0, 1.0);
+        let p2 = Point::new(5.0, 5.0);
+        assert_in_delta( 5.0, p1.distance(p2) );
+    }
+
+    #[test]
+    fn similar() {
+        let p1 = Point::new(3.0, 3.00000000001);
+        let p2 = Point::new(1.5, 1.5) + Point::new(1.5, 1.5);
+        assert!(p1.is_similar(p2));
+    }
+
+
+
 }
