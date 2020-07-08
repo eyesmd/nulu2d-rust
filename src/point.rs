@@ -134,7 +134,7 @@ impl ops::Div<f64> for Point {
 }
 
 #[cfg(test)]
-mod point_tests {
+mod tests {
     use super::*;
 
     fn assert_in_delta(a: f64, b : f64) {

@@ -1,5 +1,5 @@
 
-use crate::point::Point;
+use crate::Point;
 
 
 #[derive(Copy, Clone)]
