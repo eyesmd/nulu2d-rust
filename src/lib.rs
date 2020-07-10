@@ -4,9 +4,11 @@
 // Once loaded, the Point struct can be accesed via 'crate::point::Point'
 // 'use' can be used to make a shortcuts
 
-mod segment;
 mod point;
+mod segment;
+mod polygon;
 
 pub use crate::point::Point;
 pub use crate::point::Vector;
 pub use crate::segment::Segment;
+pub use crate::polygon::Polygon;
