@@ -60,6 +60,21 @@ impl Polygon {
         return self.vertices.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
     }
 
+    pub fn centroid(&self) -> Point {
+        let mut signed_area = 0.0;
+        let mut centroid = Point::zero();
+
+        for i in 0..self.vertices.len()-1 {
+            centroid = centroid + (self.vertices[i] + self.vertices[i+1]) * (self.vertices[i] ^ self.vertices[i+1]);
+            signed_area += self.vertices[i] ^ self.vertices[i+1];
+        }
+        signed_area += *self.vertices.last().unwrap() ^ *self.vertices.first().unwrap();
+        centroid = centroid + (*self.vertices.last().unwrap() + *self.vertices.first().unwrap()) * (*self.vertices.last().unwrap() ^ *self.vertices.first().unwrap());
+        signed_area /= 2.0;
+        centroid = centroid / (6.0 * signed_area);
+        return centroid;
+    }
+
 }
 
 #[cfg(test)]
@@ -125,5 +140,27 @@ mod tests {
         assert_eq!(p.right(), 2.0);
         assert_eq!(p.bottom(), -2.0);
         assert_eq!(p.top(), 1.0);
+    }
+
+    #[test]
+    fn centroid_simple() {
+        let p = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(1.0, 0.0),
+            Point::new(0.0, 1.0),
+        ]);
+        assert_eq!(p.centroid(), Point::new(1.0/3.0, 1.0/3.0));
+    }
+
+    #[test]
+    fn centroid_complex() {
+        let p = Polygon::new(&vec![
+            Point::new(45.3142533036254, -93.47527313511819),
+            Point::new(45.31232182518015, -93.34893036168069),
+            Point::new(45.23694281999268, -93.35167694371194),
+            Point::new(45.23500870841669, -93.47801971714944),
+            Point::new(45.3142533036254, -93.47527313511819),
+        ]);
+        assert_eq!(p.centroid(), Point::new(45.27463866133501, -93.41400121829719));
     }
 }
