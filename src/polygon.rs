@@ -45,19 +45,19 @@ impl Polygon {
     }
 
     pub fn top(&self) -> f64 {
-        return self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.y));
+        return self.vertices.iter().map(|p| p.y).fold(f64::NEG_INFINITY, f64::max);
     }
 
     pub fn bottom(&self) -> f64 {
-        return self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.y));
+        return self.vertices.iter().map(|p| p.y).fold(f64::INFINITY, f64::min);
     }
 
     pub fn left(&self) -> f64 {
-        return self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.x));
+        return self.vertices.iter().map(|p| p.x).fold(f64::INFINITY, f64::min);
     }
 
     pub fn right(&self) -> f64 {
-        return self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.x));
+        return self.vertices.iter().map(|p| p.x).fold(f64::NEG_INFINITY, f64::max);
     }
 
 }
