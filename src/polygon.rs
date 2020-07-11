@@ -65,13 +65,13 @@ impl Polygon {
         let mut centroid = Point::zero();
 
         for i in 0..self.vertices.len()-1 {
-            centroid = centroid + (self.vertices[i] + self.vertices[i+1]) * (self.vertices[i] ^ self.vertices[i+1]);
+            centroid += (self.vertices[i] + self.vertices[i+1]) * (self.vertices[i] ^ self.vertices[i+1]);
             signed_area += self.vertices[i] ^ self.vertices[i+1];
         }
         signed_area += *self.vertices.last().unwrap() ^ *self.vertices.first().unwrap();
-        centroid = centroid + (*self.vertices.last().unwrap() + *self.vertices.first().unwrap()) * (*self.vertices.last().unwrap() ^ *self.vertices.first().unwrap());
+        centroid += (*self.vertices.last().unwrap() + *self.vertices.first().unwrap()) * (*self.vertices.last().unwrap() ^ *self.vertices.first().unwrap());
         signed_area /= 2.0;
-        centroid = centroid / (6.0 * signed_area);
+        centroid /= 6.0 * signed_area;
         return centroid;
     }
 

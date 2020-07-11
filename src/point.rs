@@ -102,6 +102,13 @@ impl ops::Add<Point> for Point {
     }
 }
 
+impl ops::AddAssign<Point> for Point {
+    fn add_assign(&mut self, other: Point) {
+        self.x += other.x;
+        self.y += other.y;
+    }
+}
+
 impl ops::Sub<Point> for Point {
     type Output = Point;
     fn sub(self, other: Point) -> Point {
@@ -109,10 +116,24 @@ impl ops::Sub<Point> for Point {
     }
 }
 
+impl ops::SubAssign<Point> for Point {
+    fn sub_assign(&mut self, other: Point) {
+        self.x -= other.x;
+        self.y -= other.y;
+    }
+}
+
 impl ops::Mul<f64> for Point {
     type Output = Point;
     fn mul(self, scalar: f64) -> Point {
         return Point::new(self.x*scalar, self.y*scalar);
+    }
+}
+
+impl ops::MulAssign<f64> for Point {
+    fn mul_assign(&mut self, scalar: f64) {
+        self.x *= scalar;
+        self.y *= scalar;
     }
 }
 
@@ -134,6 +155,13 @@ impl ops::Div<f64> for Point {
     type Output = Point;
     fn div(self, scalar: f64) -> Point {
         return Point::new(self.x/scalar, self.y/scalar);
+    }
+}
+
+impl ops::DivAssign<f64> for Point {
+    fn div_assign(&mut self, scalar: f64) {
+        self.x /= scalar;
+        self.y /= scalar;
     }
 }
 
@@ -216,6 +244,11 @@ mod tests {
         let sum = point + other;
         assert_in_delta(sum.x, 13.0);
         assert_in_delta(sum.y, 0.5);
+
+        let mut point = point;
+        point += other;
+        assert_in_delta(point.x, 13.0);
+        assert_in_delta(point.y, 0.5);
     }
 
     #[test]
@@ -225,12 +258,22 @@ mod tests {
         let sub = point - other;
         assert_in_delta(sub.x, -11.0);
         assert_in_delta(sub.y, -2.5);
+
+        let mut point = point;
+        point -= other;
+        assert_in_delta(point.x, -11.0);
+        assert_in_delta(point.y, -2.5);
     }
 
     #[test]
     fn mul_scalar() {
         let point = Point::new(4.0, -1.0);
-        let point = point * 2.0;
+        let other = point * 2.0;
+        assert_in_delta(other.x, 8.0);
+        assert_in_delta(other.y, -2.0);
+
+        let mut point = point;
+        point *= 2.0;
         assert_in_delta(point.x, 8.0);
         assert_in_delta(point.y, -2.0);
     }
@@ -253,7 +296,12 @@ mod tests {
     #[test]
     fn div() {
         let point = Point::new(4.0, -1.0);
-        let point = point / 2.0;
+        let other = point / 2.0;
+        assert_in_delta(other.x, 2.0);
+        assert_in_delta(other.y, -0.5);
+
+        let mut point = point;
+        point /= 2.0;
         assert_in_delta(point.x, 2.0);
         assert_in_delta(point.y, -0.5);
     }
