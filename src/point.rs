@@ -90,10 +90,6 @@ impl Point {
     pub fn distance(self, other : Point) -> f64 {
         (self - other).norm()
     }
-
-    pub fn is_similar(self, other : Point) -> bool {
-        self.distance(other).abs() < 1e-5
-    }
 }
 
 impl ops::Add<Point> for Point {
@@ -348,7 +344,7 @@ mod tests {
     fn similar() {
         let p1 = Point::new(3.0, 3.00000000001);
         let p2 = Point::new(1.5, 1.5) + Point::new(1.5, 1.5);
-        assert!(p1.is_similar(p2));
+        assert!(p1.is_similar(p2, 1e-5));
     }
 
 }

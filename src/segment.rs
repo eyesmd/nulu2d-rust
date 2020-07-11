@@ -1,8 +1,9 @@
 
 use crate::Point;
+use similar::Similar;
+use similar_derive::Similar;
 
-
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Similar)]
 pub struct Segment {
 	pub a : Point,
     pub b : Point
@@ -25,19 +26,20 @@ impl Segment {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use similar::assert_similar;
 
     #[test]
     fn from_points() {
         let s = Segment::from_points(Point::new(0.0, 1.0), Point::new(1.0, 1.0));
-        assert!(s.a.is_similar(Point::new(0.0, 1.0)));
-        assert!(s.b.is_similar(Point::new(1.0, 1.0)));
+        assert_similar!(s.a, Point::new(0.0, 1.0));
+        assert_similar!(s.b, Point::new(1.0, 1.0));
     }
 
     #[test]
     fn from_arrow() {
         let s = Segment::from_arrow(Point::new(0.0, 1.0), Point::new(1.0, 1.0));
-        assert!(s.a.is_similar(Point::new(0.0, 1.0)));
-        assert!(s.b.is_similar(Point::new(1.0, 2.0)));
+        assert_similar!(s.a, Point::new(0.0, 1.0));
+        assert_similar!(s.b, Point::new(1.0, 2.0));
     }
 
 }
