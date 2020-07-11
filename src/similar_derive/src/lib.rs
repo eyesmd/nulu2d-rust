@@ -47,8 +47,8 @@ fn impl_similar(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl Similar for #name {
-            fn is_similar(self, other : #name) -> bool {
-                return #(self.#fields.is_similar(other.#fields))&*
+            fn is_similar(self, other : #name, eps : f64) -> bool {
+                return #(self.#fields.is_similar(other.#fields, eps))&*
             }
         }
     };
