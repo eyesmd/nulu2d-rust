@@ -2,7 +2,7 @@
 use crate::Point;
 
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Segment {
 	pub a : Point,
     pub b : Point
