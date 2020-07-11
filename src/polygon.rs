@@ -27,15 +27,37 @@ impl Polygon {
         res.push(Segment::from_points(self.vertices[len-1], self.vertices[0]));
         return res;
     }
+
     pub fn width(&self) -> f64 {
-        let max_x = self.vertices.iter().fold(std::f64::NEG_INFINITY, |m, p| f64::max(m, p.x));
-        let min_x = self.vertices.iter().fold(std::f64::INFINITY, |m, p| f64::min(m, p.x));
+        let max_x = self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.x));
+        let min_x = self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.x));
         return max_x - min_x;
     }
+
     pub fn height(&self) -> f64 {
-        let max_y = self.vertices.iter().fold(std::f64::NEG_INFINITY, |m, p| f64::max(m, p.y));
-        let min_y = self.vertices.iter().fold(std::f64::INFINITY, |m, p| f64::min(m, p.y));
+        let max_y = self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.y));
+        let min_y = self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.y));
         return max_y - min_y;
+    }
+
+    pub fn center(&self) -> Point {
+        return self.vertices.iter().fold(Point::zero(), |a, b| a + *b ) / self.vertices.len() as f64;
+    }
+
+    pub fn top(&self) -> f64 {
+        return self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.y));
+    }
+
+    pub fn bottom(&self) -> f64 {
+        return self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.y));
+    }
+
+    pub fn left(&self) -> f64 {
+        return self.vertices.iter().fold(f64::INFINITY, |m, p| f64::min(m, p.x));
+    }
+
+    pub fn right(&self) -> f64 {
+        return self.vertices.iter().fold(f64::NEG_INFINITY, |m, p| f64::max(m, p.x));
     }
 
 }
@@ -88,5 +110,20 @@ mod tests {
         ]);
         assert_eq!(p.width(), 2.0);
         assert_eq!(p.height(), 2.3);
+    }
+
+    #[test]
+    fn positions() {
+        let p = Polygon::new(&vec![
+            Point::new(0.0, -2.0),
+            Point::new(2.0, -2.0),
+            Point::new(2.0, 1.0),
+            Point::new(0.0, 1.0),
+        ]);
+        assert_eq!(p.center(), Point::new(1.0, -0.5));
+        assert_eq!(p.left(), 0.0);
+        assert_eq!(p.right(), 2.0);
+        assert_eq!(p.bottom(), -2.0);
+        assert_eq!(p.top(), 1.0);
     }
 }

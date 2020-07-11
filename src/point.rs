@@ -15,7 +15,7 @@ pub type Vector = Point;
 impl Point {
 
     // Constructors
-    pub fn new(x : f64, y : f64) -> Point{
+    pub fn new(x : f64, y : f64) -> Point {
         return Point{
             x: x,
             y: y,
@@ -27,6 +27,10 @@ impl Point {
             x: angle.cos() * norm,
             y: angle.sin() * norm
         }
+    }
+
+    pub fn zero() -> Point {
+        return Point::new(0.0, 0.0);
     }
 
     // Accessors
@@ -149,6 +153,13 @@ mod tests {
         let point = Point::new(-10.0, 15.5);
         assert_in_delta(point.x, -10.0);
         assert_in_delta(point.y, 15.5);
+    }
+
+    #[test]
+    fn zero() {
+        let point = Point::zero();
+        assert_in_delta(point.x, 0.0);
+        assert_in_delta(point.y,0.0);
     }
 
     #[test]
