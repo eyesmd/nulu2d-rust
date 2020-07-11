@@ -1,9 +1,10 @@
 
 use std::f64::consts;
 use std::ops;
+use similar::Similar;
+use similar_derive::Similar;
 
-
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug, Similar)]
 pub struct Point {
     pub x : f64,
     pub y : f64,
