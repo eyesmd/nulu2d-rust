@@ -1,7 +1,9 @@
 
 use crate::Point;
 use crate::Segment;
+use similar::Similar;
 
+#[derive(Debug, PartialEq)]
 pub struct Polygon {
 	pub vertices : Vec<Point>
 }
@@ -77,9 +79,40 @@ impl Polygon {
 
 }
 
+impl Similar for &Polygon {
+    /* NOTE: the vertices order matter for this:
+        A-B-C == A-B-C
+        A-B-C == B-C-A
+        A-C-B != A-B-C
+    */
+    /* TODO: We might want to have a more restricted invariant. Some ideas:
+        - represent convex polygons only (I think we are already assuming this somewhere)
+        - always have self.vertices sorted clockwise (take center/centroid as reference)
+        - have one constructor that sanitizes the input (i.e. computes the convex hull
+          and sorts the vertices) and another one with the adequate precondition for performance.
+    */
+    fn is_similar(self, other : &Polygon, eps : f64) -> bool {
+        if self.vertices.len() != other.vertices.len() {
+            return false;
+        }
+
+        let offset = other.vertices.iter().position(|v| v.is_similar(self.vertices[0], eps));
+        match offset {
+            None => return false,
+            Some(offset) => {
+                return
+                    other.vertices[offset..].is_similar(&self.vertices[..self.vertices.len()-offset], eps)
+                    && other.vertices[..offset].is_similar(&self.vertices[self.vertices.len()-offset..], eps);
+            },
+        }
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use similar::assert_similar;
 
     #[test]
     fn new() {
@@ -162,5 +195,22 @@ mod tests {
             Point::new(45.3142533036254, -93.47527313511819),
         ]);
         assert_eq!(p.centroid(), Point::new(45.27463866133501, -93.41400121829719));
+    }
+
+    #[test]
+    fn is_similar() {
+        let p1 = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(0.0, 1.0),
+            Point::new(1.0, 1.0),
+            Point::new(1.0, 0.0),
+        ]);
+        let p2 = Polygon::new(&vec![
+            Point::new(1.0, 0.99999999968),
+            Point::new(1.0000002, 0.0),
+            Point::new(0.0, 0.000000023),
+            Point::new(-0.0000002, 1.0),
+        ]);
+        assert_similar!(p1, &p2, 1e-5);
     }
 }
