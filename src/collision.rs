@@ -1,6 +1,7 @@
 use crate::Polygon;
 use crate::Vector;
 use crate::Point;
+use crate::Segment;
 
 
 fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
@@ -72,12 +73,83 @@ fn containing(shape : &Polygon, point : Point) -> bool {
     return true;
 }
 
+fn parametric_intersection(la : Segment, lb : Segment) -> Option<(f64, f64)> {
+    let c = la.center();
+    let v = la.direction();
+    let d = lb.center();
+    let w = lb.direction();
+
+    let ndet = v.x * w.y - v.y * w.x;
+    if ndet.abs() > f64::EPSILON {
+        return Some((
+            (w.y * (d.x - c.x) - w.x * (d.y - c.y)) / ndet,
+            (v.y * (d.x - c.x) - v.x * (d.y - c.y)) / ndet
+        ));
+    } else {
+        return None;
+    }
+}
+
+fn intersection(la : Segment, lb : Segment) -> Option<Point> {
+    match parametric_intersection(la, lb) {
+        Some((t1, t2)) if (
+            t1 >= 0.0-f64::EPSILON && t1 <= 1.0 + f64::EPSILON) &&
+            (t2 >= 0.0 - f64::EPSILON && t2 <= 1.0 + f64::EPSILON)
+            => return Some(la.a + (la.b - la.a) * t1),
+        _ => return None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::Point;
     use similar::Similar;
     use similar::assert_similar;
+
+    #[test]
+    fn parametric_intersection_regular() {
+        let l1 = Segment::from_arrow(Point::new(0.0, 0.0), Point::new(-0.5, -1.0));
+        let l2 = Segment::from_arrow(Point::new(0.0, 3.0), Point::new(1.0, -1.0));
+
+        let inter = parametric_intersection(l1, l2).unwrap();
+        assert_eq!(-2.0, inter.0);
+        assert_eq!(1.0, inter.1);
+
+        let inter = parametric_intersection(l2, l1).unwrap();
+        assert_eq!(1.0, inter.0);
+        assert_eq!(-2.0, inter.1);
+    }
+
+    #[test]
+    fn test_parametric_intersection_parallel() {
+        let l1 = Segment::from_arrow(Point::new(0.0, 3.0), Point::new(1.0, -1.0));
+        let l2 = Segment::from_arrow(Point::new(1.0, 0.0), Point::new(1.0, -1.0));
+
+        assert_eq!(parametric_intersection(l2, l1), None);
+        assert_eq!(parametric_intersection(l1, l2), None);
+    }
+
+    #[test]
+    fn intersection() {
+        let a = Point::new(0.0, 1.0);
+        let b = Point::new(1.0, 1.0);
+        let c = Point::new(1.0, 0.0);
+        let d = Point::new(0.0, 0.0);
+        let e = Point::new(2.0, 2.0);
+
+        let s1 = Segment::from_points(a, c);
+        let s2 = Segment::from_points(d, e);
+        assert_eq!(super::intersection(s1, s2), Some(Point::new(0.5, 0.5)));
+
+        let s1 = Segment::from_points(d, c);
+        let s2 = Segment::from_points(a, b);
+        assert_eq!(super::intersection(s1, s2), None);
+
+        let s1 = Segment::from_points(a, c);
+        let s2 = Segment::from_points(e, b);
+        assert_eq!(super::intersection(s1, s2), None);
+    }
 
     #[test]
     fn mtv_none() {
@@ -181,7 +253,7 @@ mod tests {
 
         assert_similar!(mtv(&p, &q), Some(Point::new(0.0, 0.0)));
         assert!(mtv(&p, &q).unwrap().norm() > 0.0);
-        }
+    }
 
     #[test]
     fn contains_false() {
@@ -197,7 +269,7 @@ mod tests {
         ]);
         let point = Point::new(0.5 - 0.1, 0.5 - 0.1);
         assert!(!containing(&shape, point));
-        }
+    }
 
     #[test]
     fn contains_true() {
@@ -213,5 +285,5 @@ mod tests {
         ]);
         let point = Point::new(0.5 + 0.1, 0.5 + 0.1);
         assert!(containing(&shape, point));
-        }
+    }
 }

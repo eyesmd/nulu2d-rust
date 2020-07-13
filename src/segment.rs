@@ -29,6 +29,10 @@ impl Segment {
         return self.b - self.a;
     }
 
+    pub fn center(self) -> Point {
+        self.a
+    }
+
 }
 
 #[cfg(test)]
@@ -55,6 +59,12 @@ mod tests {
         let s = Segment::from_points(Point::new(0.0, 1.0), Point::new(1.0, 0.0));
         let d = s.direction();
         assert_similar!(d, Vector::new(1.0, -1.0));
+    }
+
+    #[test]
+    fn center() {
+        let s = Segment::from_points(Point::new(0.0, 1.0), Point::new(1.0, 0.0));
+        assert_similar!(s.center(), Point::new(0.0, 1.0));
     }
 
 }
