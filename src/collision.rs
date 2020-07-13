@@ -1,5 +1,6 @@
 use crate::Polygon;
 use crate::Vector;
+use crate::Point;
 
 
 fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
@@ -52,6 +53,24 @@ fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
     return Some(mtv);
 }
 
+fn containing(shape : &Polygon, point : Point) -> bool {
+    let shape_point = shape.center();
+    for segment in shape.segments().iter() {
+        let orthogonal = segment.direction().perp().unit();
+
+        let axis_projection = segment.a.vector_projection_to(orthogonal);
+        let shape_point_projection = shape_point.vector_projection_to(orthogonal);
+        let point_projection = point.vector_projection_to(orthogonal);
+
+        let shape_point_difference = shape_point_projection - axis_projection;
+        let point_difference = point_projection - axis_projection;
+
+        if point_difference * shape_point_difference < 0.0 {
+            return false;
+        }
+    }
+    return true;
+}
 
 #[cfg(test)]
 mod tests {
@@ -145,52 +164,54 @@ mod tests {
         assert_similar!(mtv(&p, &q), Some(Point::new(0.5, 0.5)));
     }
 
-    // fn border_collision() {
-    //     let p = Polygon::new(&vec![
-    //         Point::new(0, 0),
-    //         Point::new(0, 1),
-    //         Point::new(1, 1),
-    //         Point::new(1, 0),
-    //     ]);
-    //     let q = Polygon::new(&vec![
-    //         Point::new(0, 1),
-    //         Point::new(0, 2),
-    //         Point::new(1, 2),
-    //         Point::new(1, 1),
-    //     ]);
+    #[test]
+    fn border_collision() {
+        let p = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(0.0, 1.0),
+            Point::new(1.0, 1.0),
+            Point::new(1.0, 0.0),
+        ]);
+        let q = Polygon::new(&vec![
+            Point::new(0.0, 1.0),
+            Point::new(0.0, 2.0),
+            Point::new(1.0, 2.0),
+            Point::new(1.0, 1.0),
+        ]);
 
-    //     assert Collision::colliding?(p, q)
-    //     assert_equal Point::new(0, 0), Collision::mtv(p, q)
-    //     assert Collision::mtv(p, q).norm > 0
-    //     }
+        assert_similar!(mtv(&p, &q), Some(Point::new(0.0, 0.0)));
+        assert!(mtv(&p, &q).unwrap().norm() > 0.0);
+        }
 
-    // fn contains_false() {
-    //     let shape = Polygon::new(&vec![
-    //         Point::new(0, 1),
-    //                             Point::new(1, 0),
-    //                             Point::new(2, 0),
-    //                             Point::new(3, 1),
-    //                             Point::new(3, 2),
-    //                             Point::new(2, 3),
-    //                             Point::new(1, 3),
-    //                             Point::new(0, 2),
-    //                             ]);
-    //     point = Point::new(0.5 - 0.1, 0.5 - 0.1)
-    //     assert_equal false, Collision::containing?(shape, point)
-    //     }
+    #[test]
+    fn contains_false() {
+        let shape = Polygon::new(&vec![
+            Point::new(0.0, 1.0),
+            Point::new(1.0, 0.0),
+            Point::new(2.0, 0.0),
+            Point::new(3.0, 1.0),
+            Point::new(3.0, 2.0),
+            Point::new(2.0, 3.0),
+            Point::new(1.0, 3.0),
+            Point::new(0.0, 2.0),
+        ]);
+        let point = Point::new(0.5 - 0.1, 0.5 - 0.1);
+        assert!(!containing(&shape, point));
+        }
 
-    // fn contains_true() {
-    //     let shape = Polygon::new(&vec![
-    //         Point::new(0, 1),
-    //                             Point::new(1, 0),
-    //                             Point::new(2, 0),
-    //                             Point::new(3, 1),
-    //                             Point::new(3, 2),
-    //                             Point::new(2, 3),
-    //                             Point::new(1, 3),
-    //                             Point::new(0, 2),
-    //                             ]);
-    //     point = Point::new(0.5 + 0.1, 0.5 + 0.1)
-    //     assert_equal true, Collision::containing?(shape, point)
-    //     }
+    #[test]
+    fn contains_true() {
+        let shape = Polygon::new(&vec![
+            Point::new(0.0, 1.0),
+            Point::new(1.0, 0.0),
+            Point::new(2.0, 0.0),
+            Point::new(3.0, 1.0),
+            Point::new(3.0, 2.0),
+            Point::new(2.0, 3.0),
+            Point::new(1.0, 3.0),
+            Point::new(0.0, 2.0),
+        ]);
+        let point = Point::new(0.5 + 0.1, 0.5 + 0.1);
+        assert!(containing(&shape, point));
+        }
 }
