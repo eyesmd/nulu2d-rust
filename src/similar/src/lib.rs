@@ -4,8 +4,6 @@ pub trait Similar<T = Self> {
     fn is_similar(self, other : Self, eps : f64) -> bool;
 }
 
-
-
 impl Similar for f64 {
     fn is_similar(self, other : f64, eps : f64) -> bool {
         return (self-other).abs() < eps;
@@ -15,6 +13,16 @@ impl Similar for f64 {
 impl Similar for u32 {
     fn is_similar(self, other : u32, _ : f64) -> bool {
         return self == other;
+    }
+}
+
+impl<T> Similar for Option<T> where T : Similar {
+    fn is_similar(self, other : Option<T>, eps : f64) -> bool {
+        match (self, other) {
+            (Some(x), Some(y)) => return x.is_similar(y, eps),
+            (None, None) => return true,
+            _ => return false,
+        }
     }
 }
 

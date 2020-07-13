@@ -7,6 +7,7 @@
 mod point;
 mod segment;
 mod polygon;
+mod collision;
 
 pub use crate::point::Point;
 pub use crate::point::Vector;

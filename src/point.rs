@@ -67,6 +67,10 @@ impl Point {
         other.unit() * self.scalar_projection_to(other)
     }
 
+    pub fn perp(self) -> Point {
+        Point::new(self.y, -self.x)
+    }
+
     // Mutators
     pub fn set_angle(&mut self, angle : f64) {
         self.direct_to(angle, self.norm());
