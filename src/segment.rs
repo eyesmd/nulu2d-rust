@@ -19,7 +19,7 @@ impl Segment {
 		Segment{ a, b }
 	}
 
-	pub fn from_arrow(center: Point, direction: Point) -> Segment {
+	pub fn from_arrow(center: Point, direction: Vector) -> Segment {
 		Segment{ a: center, b: center + direction }
     }
 
