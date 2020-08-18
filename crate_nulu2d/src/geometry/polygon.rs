@@ -1,5 +1,6 @@
 use crate::Point;
 use crate::Segment;
+use crate::Vector;
 use similar::Similar;
 
 #[derive(Debug, PartialEq)]
@@ -111,6 +112,17 @@ impl Polygon {
         signed_area /= 2.0;
         centroid /= 6.0 * signed_area;
         return centroid;
+    }
+
+    // Mutators
+    pub fn move_xy(&mut self, offset: Vector) {
+        self.vertices.iter_mut().for_each(|v| *v += offset);
+    }
+    pub fn move_x(&mut self, offset_x: f64) {
+        self.move_xy(Vector::new(offset_x, 0.0));
+    }
+    pub fn move_y(&mut self, offset_y: f64) {
+        self.move_xy(Vector::new(0.0, offset_y));
     }
 }
 
@@ -253,5 +265,45 @@ mod tests {
             Point::new(-0.0000002, 1.0),
         ]);
         assert_similar!(p1, &p2, 1e-5);
+    }
+
+    #[test]
+
+    fn move_xy() {
+        let mut p = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(2.0, 0.0),
+            Point::new(2.0, 1.0),
+            Point::new(0.0, 1.0),
+        ]);
+        p.move_xy(Vector::new(1.0, -1.0));
+        assert_eq!(*p.vertices.first().unwrap(), Point::new(1.0, -1.0));
+        assert_eq!(*p.vertices.last().unwrap(), Point::new(1.0, 0.0));
+    }
+
+    #[test]
+    fn move_x() {
+        let mut p = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(2.0, 0.0),
+            Point::new(2.0, 1.0),
+            Point::new(0.0, 1.0),
+        ]);
+        p.move_x(3.0);
+        assert_eq!(*p.vertices.first().unwrap(), Point::new(3.0, 0.0));
+        assert_eq!(*p.vertices.last().unwrap(), Point::new(3.0, 1.0));
+    }
+
+    #[test]
+    fn move_y() {
+        let mut p = Polygon::new(&vec![
+            Point::new(0.0, 0.0),
+            Point::new(2.0, 0.0),
+            Point::new(2.0, 1.0),
+            Point::new(0.0, 1.0),
+        ]);
+        p.move_y(-1.0);
+        assert_eq!(*p.vertices.first().unwrap(), Point::new(0.0, -1.0));
+        assert_eq!(*p.vertices.last().unwrap(), Point::new(0.0, 0.0));
     }
 }

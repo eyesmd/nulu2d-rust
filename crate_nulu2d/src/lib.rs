@@ -3,12 +3,11 @@
 // Once loaded, the Point struct can be accesed via 'crate::point::Point'
 // 'use' can be used to make a shortcuts
 
-mod collision;
-mod point;
-mod polygon;
-mod segment;
+mod geometry;
 
-pub use crate::point::Point;
-pub use crate::point::Vector;
-pub use crate::polygon::Polygon;
-pub use crate::segment::Segment;
+pub use crate::geometry::Point;
+pub use crate::geometry::Polygon;
+pub use crate::geometry::Segment;
+pub use crate::geometry::Vector;
+
+mod physics;
