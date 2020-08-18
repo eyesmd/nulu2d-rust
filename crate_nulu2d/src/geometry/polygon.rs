@@ -277,8 +277,8 @@ mod tests {
             Point::new(0.0, 1.0),
         ]);
         p.move_xy(Vector::new(1.0, -1.0));
-        assert_eq!(*p.vertices.first().unwrap(), Point::new(1.0, -1.0));
-        assert_eq!(*p.vertices.last().unwrap(), Point::new(1.0, 0.0));
+        assert_similar!(*p.vertices.first().unwrap(), Point::new(1.0, -1.0));
+        assert_similar!(*p.vertices.last().unwrap(), Point::new(1.0, 0.0));
     }
 
     #[test]
@@ -290,8 +290,8 @@ mod tests {
             Point::new(0.0, 1.0),
         ]);
         p.move_x(3.0);
-        assert_eq!(*p.vertices.first().unwrap(), Point::new(3.0, 0.0));
-        assert_eq!(*p.vertices.last().unwrap(), Point::new(3.0, 1.0));
+        assert_similar!(*p.vertices.first().unwrap(), Point::new(3.0, 0.0));
+        assert_similar!(*p.vertices.last().unwrap(), Point::new(3.0, 1.0));
     }
 
     #[test]
@@ -303,7 +303,7 @@ mod tests {
             Point::new(0.0, 1.0),
         ]);
         p.move_y(-1.0);
-        assert_eq!(*p.vertices.first().unwrap(), Point::new(0.0, -1.0));
-        assert_eq!(*p.vertices.last().unwrap(), Point::new(0.0, 0.0));
+        assert_similar!(*p.vertices.first().unwrap(), Point::new(0.0, -1.0));
+        assert_similar!(*p.vertices.last().unwrap(), Point::new(0.0, 0.0));
     }
 }
