@@ -1,21 +1,39 @@
-use crate::Polygon;
-use crate::Vector;
 use crate::Point;
+use crate::Polygon;
 use crate::Segment;
+use crate::Vector;
 
-
-fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
+fn mtv(a: &Polygon, b: &Polygon) -> Option<Vector> {
     let mut mtv = Vector::new(f64::INFINITY, f64::INFINITY);
-    let axes = a.segments().into_iter().chain(b.segments().into_iter())
+    let axes = a
+        .segments()
+        .into_iter()
+        .chain(b.segments().into_iter())
         .map(|s| s.direction().perp().unit());
 
     for axis in axes {
-        let mut mina = a.vertices.iter().map(|v| *v * axis).fold(f64::INFINITY, f64::min);
-        let mut maxa = a.vertices.iter().map(|v| *v * axis).fold(f64::NEG_INFINITY, f64::max);
-        let mut minb = b.vertices.iter().map(|v| *v * axis).fold(f64::INFINITY, f64::min);
-        let mut maxb = b.vertices.iter().map(|v| *v * axis).fold(f64::NEG_INFINITY, f64::max);
+        let mut mina = a
+            .vertices
+            .iter()
+            .map(|v| *v * axis)
+            .fold(f64::INFINITY, f64::min);
+        let mut maxa = a
+            .vertices
+            .iter()
+            .map(|v| *v * axis)
+            .fold(f64::NEG_INFINITY, f64::max);
+        let mut minb = b
+            .vertices
+            .iter()
+            .map(|v| *v * axis)
+            .fold(f64::INFINITY, f64::min);
+        let mut maxb = b
+            .vertices
+            .iter()
+            .map(|v| *v * axis)
+            .fold(f64::NEG_INFINITY, f64::max);
 
-        let mut overlap : f64 ;
+        let mut overlap: f64;
         let mut neg = false;
 
         if mina >= minb {
@@ -39,7 +57,7 @@ fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
             }
         } else if minb <= maxa {
             overlap = maxa - minb
-        } else{
+        } else {
             return None;
         }
 
@@ -48,13 +66,13 @@ fn mtv(a : &Polygon, b: &Polygon) -> Option<Vector> {
 
         // mtv update
         if overlap < mtv.norm() {
-            mtv = axis * (if neg {-overlap} else {overlap});
+            mtv = axis * (if neg { -overlap } else { overlap });
         }
     }
     return Some(mtv);
 }
 
-fn containing(shape : &Polygon, point : Point) -> bool {
+fn containing(shape: &Polygon, point: Point) -> bool {
     let shape_point = shape.center();
     for segment in shape.segments().iter() {
         let orthogonal = segment.direction().perp().unit();
@@ -73,7 +91,7 @@ fn containing(shape : &Polygon, point : Point) -> bool {
     return true;
 }
 
-fn parametric_intersection(la : Segment, lb : Segment) -> Option<(f64, f64)> {
+fn parametric_intersection(la: Segment, lb: Segment) -> Option<(f64, f64)> {
     let c = la.center();
     let v = la.direction();
     let d = lb.center();
@@ -83,19 +101,21 @@ fn parametric_intersection(la : Segment, lb : Segment) -> Option<(f64, f64)> {
     if ndet.abs() > f64::EPSILON {
         return Some((
             (w.y * (d.x - c.x) - w.x * (d.y - c.y)) / ndet,
-            (v.y * (d.x - c.x) - v.x * (d.y - c.y)) / ndet
+            (v.y * (d.x - c.x) - v.x * (d.y - c.y)) / ndet,
         ));
     } else {
         return None;
     }
 }
 
-fn intersection(la : Segment, lb : Segment) -> Option<Point> {
+fn intersection(la: Segment, lb: Segment) -> Option<Point> {
     match parametric_intersection(la, lb) {
-        Some((t1, t2)) if (
-            t1 >= 0.0-f64::EPSILON && t1 <= 1.0 + f64::EPSILON) &&
-            (t2 >= 0.0 - f64::EPSILON && t2 <= 1.0 + f64::EPSILON)
-            => return Some(la.a + (la.b - la.a) * t1),
+        Some((t1, t2))
+            if (t1 >= 0.0 - f64::EPSILON && t1 <= 1.0 + f64::EPSILON)
+                && (t2 >= 0.0 - f64::EPSILON && t2 <= 1.0 + f64::EPSILON) =>
+        {
+            return Some(la.a + (la.b - la.a) * t1)
+        }
         _ => return None,
     }
 }
@@ -104,8 +124,8 @@ fn intersection(la : Segment, lb : Segment) -> Option<Point> {
 mod tests {
     use super::*;
     use crate::Point;
-    use similar::Similar;
     use similar::assert_similar;
+    use similar::Similar;
 
     #[test]
     fn parametric_intersection_regular() {

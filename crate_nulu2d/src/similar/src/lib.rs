@@ -1,23 +1,26 @@
 mod macros;
 
 pub trait Similar<T = Self> {
-    fn is_similar(self, other : Self, eps : f64) -> bool;
+    fn is_similar(self, other: Self, eps: f64) -> bool;
 }
 
 impl Similar for f64 {
-    fn is_similar(self, other : f64, eps : f64) -> bool {
-        return (self-other).abs() < eps;
+    fn is_similar(self, other: f64, eps: f64) -> bool {
+        return (self - other).abs() < eps;
     }
 }
 
 impl Similar for u32 {
-    fn is_similar(self, other : u32, _ : f64) -> bool {
+    fn is_similar(self, other: u32, _: f64) -> bool {
         return self == other;
     }
 }
 
-impl<T> Similar for Option<T> where T : Similar {
-    fn is_similar(self, other : Option<T>, eps : f64) -> bool {
+impl<T> Similar for Option<T>
+where
+    T: Similar,
+{
+    fn is_similar(self, other: Option<T>, eps: f64) -> bool {
         match (self, other) {
             (Some(x), Some(y)) => return x.is_similar(y, eps),
             (None, None) => return true,
@@ -54,8 +57,11 @@ a good idea to build a macro and avoid code duplication (TODO).
 //     }
 // }
 
-impl<T> Similar for &Vec<T> where T : Similar + Copy {
-    fn is_similar(self, other : &Vec<T>, eps : f64) -> bool {
+impl<T> Similar for &Vec<T>
+where
+    T: Similar + Copy,
+{
+    fn is_similar(self, other: &Vec<T>, eps: f64) -> bool {
         if self.len() != other.len() {
             return false;
         }
@@ -68,16 +74,19 @@ impl<T> Similar for &Vec<T> where T : Similar + Copy {
     }
 }
 
-impl<T> Similar for &[T] where T : Similar + Copy {
-    fn is_similar(self, other : &[T], eps : f64) -> bool {
-    if self.len() != other.len() {
-        return false;
-    }
-    for i in 0..self.len() {
-            if !self[i].is_similar(other[i], eps) {
-                    return false;
-                }
-            }
-            return true;
+impl<T> Similar for &[T]
+where
+    T: Similar + Copy,
+{
+    fn is_similar(self, other: &[T], eps: f64) -> bool {
+        if self.len() != other.len() {
+            return false;
         }
+        for i in 0..self.len() {
+            if !self[i].is_similar(other[i], eps) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

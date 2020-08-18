@@ -1,33 +1,27 @@
-
-use std::f64::consts;
-use std::ops;
 use similar::Similar;
 use similar_derive::Similar;
+use std::f64::consts;
+use std::ops;
 
 #[derive(Copy, Clone, PartialEq, Debug, Similar)]
 pub struct Point {
-    pub x : f64,
-    pub y : f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 pub type Vector = Point;
 
-
 impl Point {
-
     // Constructors
-    pub fn new(x : f64, y : f64) -> Point {
-        return Point{
-            x: x,
-            y: y,
-        };
+    pub fn new(x: f64, y: f64) -> Point {
+        return Point { x: x, y: y };
     }
 
-    pub fn from_polar(angle : f64, norm : f64) -> Point {
+    pub fn from_polar(angle: f64, norm: f64) -> Point {
         return Point {
             x: angle.cos() * norm,
-            y: angle.sin() * norm
-        }
+            y: angle.sin() * norm,
+        };
     }
 
     pub fn zero() -> Point {
@@ -36,7 +30,7 @@ impl Point {
 
     // Accessors
     pub fn angle(self) -> f64 {
-        return (self.y.atan2(self.x) + 2.0*consts::PI) % (2.0*consts::PI);
+        return (self.y.atan2(self.x) + 2.0 * consts::PI) % (2.0 * consts::PI);
     }
 
     pub fn norm(self) -> f64 {
@@ -47,23 +41,19 @@ impl Point {
         return self / self.norm();
     }
 
-    pub fn rotated(self, angle : f64) -> Point {
-        Point::from_polar(
-            angle,
-            self.norm())
+    pub fn rotated(self, angle: f64) -> Point {
+        Point::from_polar(angle, self.norm())
     }
 
-    pub fn trimmed(self, max_length : f64) -> Point {
-        Point::from_polar(
-            self.angle(),
-            self.norm().min(max_length))
+    pub fn trimmed(self, max_length: f64) -> Point {
+        Point::from_polar(self.angle(), self.norm().min(max_length))
     }
 
-    pub fn scalar_projection_to(self, other : Point) -> f64 {
+    pub fn scalar_projection_to(self, other: Point) -> f64 {
         self * other.unit()
     }
 
-    pub fn vector_projection_to(self, other : Point) -> Point {
+    pub fn vector_projection_to(self, other: Point) -> Point {
         other.unit() * self.scalar_projection_to(other)
     }
 
@@ -72,26 +62,26 @@ impl Point {
     }
 
     // Mutators
-    pub fn set_angle(&mut self, angle : f64) {
+    pub fn set_angle(&mut self, angle: f64) {
         self.direct_to(angle, self.norm());
     }
 
-    pub fn set_norm(&mut self, norm : f64) {
+    pub fn set_norm(&mut self, norm: f64) {
         self.direct_to(self.angle(), norm);
     }
 
-    pub fn direct_to(&mut self, angle : f64, norm : f64) {
+    pub fn direct_to(&mut self, angle: f64, norm: f64) {
         self.x = angle.cos() * norm;
         self.y = angle.sin() * norm;
     }
 
-    pub fn point_to(&mut self, x : f64, y : f64) {
+    pub fn point_to(&mut self, x: f64, y: f64) {
         self.x = x;
         self.y = y;
     }
 
     // Comparisons
-    pub fn distance(self, other : Point) -> f64 {
+    pub fn distance(self, other: Point) -> f64 {
         (self - other).norm()
     }
 }
@@ -127,7 +117,7 @@ impl ops::SubAssign<Point> for Point {
 impl ops::Mul<f64> for Point {
     type Output = Point;
     fn mul(self, scalar: f64) -> Point {
-        return Point::new(self.x*scalar, self.y*scalar);
+        return Point::new(self.x * scalar, self.y * scalar);
     }
 }
 
@@ -155,7 +145,7 @@ impl ops::BitXor<Point> for Point {
 impl ops::Div<f64> for Point {
     type Output = Point;
     fn div(self, scalar: f64) -> Point {
-        return Point::new(self.x/scalar, self.y/scalar);
+        return Point::new(self.x / scalar, self.y / scalar);
     }
 }
 
@@ -182,7 +172,7 @@ mod tests {
     fn zero() {
         let point = Point::zero();
         assert_similar!(point.x, 0.0);
-        assert_similar!(point.y,0.0);
+        assert_similar!(point.y, 0.0);
     }
 
     #[test]
@@ -195,14 +185,14 @@ mod tests {
     #[test]
     fn polar_read() {
         let point = Point::new(-1.0, -1.0);
-        assert_similar!(point.angle(), consts::PI*5.0/4.0);
+        assert_similar!(point.angle(), consts::PI * 5.0 / 4.0);
         assert_similar!(point.norm(), 2.0_f64.sqrt());
 
         let point = Point::new(1.0, 0.00001);
         assert_similar!(point.angle(), 0.0);
 
         let point = Point::new(1.0, -0.00001);
-        let expected = 2.0*consts::PI;
+        let expected = 2.0 * consts::PI;
         assert_similar!(point.angle(), expected);
     }
 
@@ -211,7 +201,7 @@ mod tests {
         let mut point = Point::new(2.0, 0.0);
 
         point.set_norm(1.0);
-        point.set_angle(consts::PI/4.0);
+        point.set_angle(consts::PI / 4.0);
         assert_similar!(point.x, 0.707);
         assert_similar!(point.y, 0.707);
 
@@ -312,7 +302,7 @@ mod tests {
     #[test]
     fn rotated() {
         let point = Point::new(1.0, 0.0);
-        let rotated = point.rotated(consts::PI/4.0);
+        let rotated = point.rotated(consts::PI / 4.0);
         assert_similar!(rotated.x, 0.5_f64.sqrt());
         assert_similar!(rotated.y, 0.5_f64.sqrt());
         assert_similar!(point.x, 1.0);
@@ -323,8 +313,8 @@ mod tests {
     fn scalar_projection_to() {
         let p1 = Point::new(1.0, 1.0).unit();
         let p2 = Point::new(1.0, 0.0);
-        assert_similar!( (consts::PI/4.0).cos() , p1.scalar_projection_to(p2) );
-        assert_similar!( (consts::PI/4.0).cos() , p2.scalar_projection_to(p1) );
+        assert_similar!((consts::PI / 4.0).cos(), p1.scalar_projection_to(p2));
+        assert_similar!((consts::PI / 4.0).cos(), p2.scalar_projection_to(p1));
     }
 
     #[test]
@@ -332,16 +322,16 @@ mod tests {
         let p1 = Point::new(1.0, 1.0).unit();
         let p2 = Point::new(1.0, 0.0);
         let actual = p1.vector_projection_to(p2);
-        let expected = Point::new((consts::PI/4.0).cos(), 0.0);
-        assert_similar!( actual.x, expected.x );
-        assert_similar!( actual.y, expected.y );
+        let expected = Point::new((consts::PI / 4.0).cos(), 0.0);
+        assert_similar!(actual.x, expected.x);
+        assert_similar!(actual.y, expected.y);
     }
 
     #[test]
     fn distance() {
         let p1 = Point::new(2.0, 1.0);
         let p2 = Point::new(5.0, 5.0);
-        assert_similar!( 5.0, p1.distance(p2) );
+        assert_similar!(5.0, p1.distance(p2));
     }
 
     #[test]
@@ -350,5 +340,4 @@ mod tests {
         let p2 = Point::new(1.5, 1.5) + Point::new(1.5, 1.5);
         assert!(p1.is_similar(p2, 1e-5));
     }
-
 }

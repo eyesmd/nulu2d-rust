@@ -19,29 +19,18 @@ pub fn similar_derive(input: TokenStream) -> TokenStream {
 fn impl_similar(ast: &syn::DeriveInput) -> TokenStream {
     let mut fields = vec![];
     match &ast.data {
-        syn::Data::Struct(data_struct) => {
-            match &data_struct.fields {
-                syn::Fields::Named(fields_named) => {
-                    for field in &fields_named.named {
-                        let ident = field.ident.as_ref().unwrap();
-                        fields.push(ident);
-                    }
-
-                },
-                syn::Fields::Unnamed(_) => {
-                    panic!("Not yet implemented for Unnamed fields.")
-                },
-                syn::Fields::Unit => {
-                    panic!("Not yet implemented for Unit.")
-                },
+        syn::Data::Struct(data_struct) => match &data_struct.fields {
+            syn::Fields::Named(fields_named) => {
+                for field in &fields_named.named {
+                    let ident = field.ident.as_ref().unwrap();
+                    fields.push(ident);
+                }
             }
+            syn::Fields::Unnamed(_) => panic!("Not yet implemented for Unnamed fields."),
+            syn::Fields::Unit => panic!("Not yet implemented for Unit."),
         },
-        syn::Data::Enum(_) => {
-            panic!("Not yet implemented for Enum.")
-        },
-        syn::Data::Union(_) => {
-            panic!("Not yet implemented for Union.")
-        },
+        syn::Data::Enum(_) => panic!("Not yet implemented for Enum."),
+        syn::Data::Union(_) => panic!("Not yet implemented for Union."),
     };
 
     let name = &ast.ident;

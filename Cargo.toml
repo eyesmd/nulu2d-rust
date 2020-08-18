@@ -1,12 +1,2 @@
-[package]
-name = "nulu2d"
-version = "0.1.0"
-authors = []
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-similar = { path = "src/similar" }
-similar_derive = { path = "src/similar_derive" }
-ggez = "0.5"
+[workspace]
+members = [ "crate_nulu2d", "crate_testbed" ]

@@ -1,4 +1,3 @@
-
 use crate::Point;
 use crate::Vector;
 
@@ -7,20 +6,21 @@ use similar_derive::Similar;
 
 #[derive(Copy, Clone, Debug, PartialEq, Similar)]
 pub struct Segment {
-	pub a : Point,
-    pub b : Point
+    pub a: Point,
+    pub b: Point,
 }
 
-
 impl Segment {
+    // Constructors
+    pub fn from_points(a: Point, b: Point) -> Segment {
+        Segment { a, b }
+    }
 
-	// Constructors
-	pub fn from_points(a: Point, b: Point) -> Segment {
-		Segment{ a, b }
-	}
-
-	pub fn from_arrow(center: Point, direction: Vector) -> Segment {
-		Segment{ a: center, b: center + direction }
+    pub fn from_arrow(center: Point, direction: Vector) -> Segment {
+        Segment {
+            a: center,
+            b: center + direction,
+        }
     }
 
     // TODO: Change the name of this method
@@ -32,7 +32,6 @@ impl Segment {
     pub fn center(self) -> Point {
         self.a
     }
-
 }
 
 #[cfg(test)]
@@ -66,5 +65,4 @@ mod tests {
         let s = Segment::from_points(Point::new(0.0, 1.0), Point::new(1.0, 0.0));
         assert_similar!(s.center(), Point::new(0.0, 1.0));
     }
-
 }
